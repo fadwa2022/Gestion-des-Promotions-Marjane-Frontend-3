@@ -19,7 +19,9 @@
     "target": "ES2022",
     "module": "ES2022",
     "strict": false,
-
+    "paths": {
+      "@shared/styles": ["styles.css"],
+    },
     "useDefineForClassFields": false,
     "lib": [
       "ES2022",
