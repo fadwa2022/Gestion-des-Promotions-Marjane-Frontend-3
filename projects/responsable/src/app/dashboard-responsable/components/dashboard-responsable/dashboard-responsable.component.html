@@ -146,16 +146,15 @@
             <td class="text-center">{{promotion.datepromo}}</td>
 						<td class="text-center">{{promotion.statut}}</td>
             <td class="text-center">
-              <!-- Input for Quantity -->
-              <input  type="number" [value]="promotion.quantity" class="w-16 text-center border-2 border-gray-300 rounded-md px-2 py-1">
+              <input type="number" [(ngModel)]="quantite" class="w-16 text-center border-2 border-gray-300 rounded-md px-2 py-1" (input)="onInputChange(promotion)">
             </td>
             <td class="text-center">
-             <button class="ml-2 bg-blue-500 text-white px-4 py-2 rounded">Accepter</button>
+             <button (click)="updatePromotion(promotion.id,promotion.quantity, 'accepter')" class="ml-2 bg-blue-500 text-white px-4 py-2 rounded">Accepter</button>
             </td>
             <td class="text-center">
-              <!-- Reject Button (Red) -->
-              <button class="ml-2 bg-red-500 text-white px-4 py-2 rounded">Refuser</button>
-          </td>					</tr>
+              <button (click)="updatePromotion(promotion.id,promotion.quantity,'refuser')"class="ml-2 bg-red-500 text-white px-4 py-2 rounded">Refuser</button>
+          </td>
+        			</tr>
 				</tbody>
 
 			</table>

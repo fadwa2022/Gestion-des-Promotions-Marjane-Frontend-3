@@ -18,7 +18,7 @@ export class PromotionsService {
 
     return this.http.get<PromotionModule>(url);
   }
-  getPromotionById(promotionId: number): Observable<PromotionModule> {
+  getPromotionById(promotionId: Number): Observable<PromotionModule> {
     const url = `${this.promotionUrl}/${promotionId}`;
     return this.http.get<PromotionModule>(url);
   }
@@ -29,10 +29,10 @@ export class PromotionsService {
     return this.http.post<PromotionModule>(url, data);
   }
 
-  // updatePromotion(promotion: PromotionModule): Observable<PromotionModule> {
-  //   const url = `${this.promotionUrl}/${promotion.id}`;
-  //   return this.http.put<PromotionModule>(url, promotion);
-  // }
+  updatePromotion(promotion: PromotionModule): Observable<PromotionModule> {
+    const url = `${this.promotionUrl}/${promotion.id}`;
+    return this.http.put<PromotionModule>(url, promotion);
+  }
 
   // deletePromotion(promotionId: number): Observable<void> {
   //   const url = `${this.promotionUrl}/${promotionId}`;

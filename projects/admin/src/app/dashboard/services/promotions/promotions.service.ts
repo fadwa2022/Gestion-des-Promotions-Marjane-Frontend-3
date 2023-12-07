@@ -15,14 +15,17 @@ export class PromotionsService {
 
   getPromotions(): Observable<PromotionModule> {
     const url = `${this.promotionUrl}`;
-
     return this.http.get<PromotionModule>(url);
   }
   getPromotionById(promotionId: number): Observable<PromotionModule> {
     const url = `${this.promotionUrl}/${promotionId}`;
     return this.http.get<PromotionModule>(url);
-  }
 
+  }
+  getPagination(page: number,size: number): any {
+    const url = `${this.promotionUrl}/pages?page=${page}&size=${size}`;
+    return this.http.get<PromotionModule>(url);
+  }
   addPromotion(data: any): Observable<any> {
     console.log(data)
     const url = `${this.promotionUrl}`;

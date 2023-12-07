@@ -19,5 +19,5 @@ export class PromotionModule {
   produit:PromotionModule;
   datepromo: Date;
   statut:StatutModule;
-  quantity:Number;
+  quantity:number;
 }

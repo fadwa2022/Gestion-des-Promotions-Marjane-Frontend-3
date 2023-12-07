@@ -17,12 +17,12 @@ import { ProduitModule } from '../../../models/produit/produit.module';
 ]
 })
 export class DashboardAdminComponent implements OnInit {
+
   promotions: PromotionModule[];
   categories:CategorieModule[];
   promotionsadmin: PromotionModule[];
   responsables:ResponsableModule[];
   responsablesadmin:ResponsableModule[];
-  pageSize = 10;
   localStorageData: any;
   admin:any;
   products:ProduitModule[];
@@ -31,27 +31,33 @@ export class DashboardAdminComponent implements OnInit {
   selectedResponsable: number;
   selectedProduct: number;
   datePromo: string;
-  p: number = 1;
-  constructor(
+  promotionsrefused: PromotionModule[];
+
+  selectedStatut: any ;
+  filteredPromotions: PromotionModule[];
+  page:number = 0;
+  size:number = 3;
+  totalPages : number = 0;
+  currentPage: any;
+    constructor(
     private promotionservice:PromotionsService,
     private sessiondata:SessionDataService,
     private responsableservice:ResponsableService,
     private categoriessevice:CategorieService,
     private productsservice:ProduitsService,
-    private paginationService: PaginationService
     ) {}
     ngOnInit(): void {
       this.loadPromotions();
       this.loadResponsable();
       this.loadcategories();
       this.loadproducts();
-    }
+      this.paginationpromotions();
+   }
 loadcategories():void{
   this.categoriessevice.getCategories().subscribe(
     (categories) => {
       if (Array.isArray(categories)) {
       this.categories=categories;
-      console.log(categories)
       }
     },
     (error) => {
@@ -74,16 +80,17 @@ loadproducts():void{
   );
 }
 loadPromotions(): void {
-      this.promotionservice.getPromotions().subscribe(
-        (promotions) => {
+     this.promotionservice.getPromotions().subscribe(
+         (promotions) => {
           this.handlePromotionsResponse(promotions);
+          this.updateallpromotion();
         },
         (error) => {
           this.handleError(error);
         }
       );
     }
- loadResponsable(): void {
+loadResponsable(): void {
   this.responsableservice.getResponsables().subscribe(
     (responsables) => {
      this.handleresponsablsResponse(responsables);
@@ -100,10 +107,37 @@ private handlePromotionsResponse(promotions: any): void {
         this.promotionsadmin = this.promotions.filter(
           (promotion) => promotion.responsable.admin.id === this.admin.id
         );
+
             } else {
         console.error('La réponse du service n\'est pas un tableau.');
-      }
-    }
+      } }
+
+updateallpromotion(){
+  if (Array.isArray(this.promotionsadmin)) {
+    const today = new Date().toISOString().split('T')[0];
+    this.promotionsrefused = this.promotionsadmin.filter(
+      (promotion) =>
+        this.isSameDate(new Date(promotion.datepromo), new Date(today))
+    );
+  }
+  for (const promotion of this.promotionsrefused) {
+
+    promotion.statut ='REFUSED'
+
+  }
+
+}
+
+private isSameDate(date1: Date, date2: Date): boolean {
+    return (
+      date1.getFullYear() < date2.getFullYear() ||
+      (date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() < date2.getMonth()) ||
+      (date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() < date2.getDate())
+  );
+  }
 private handleresponsablsResponse(responsables: any): void {
       if (Array.isArray(responsables)) {
         this.responsables = responsables;
@@ -111,7 +145,6 @@ private handleresponsablsResponse(responsables: any): void {
         this.responsablesadmin = this.responsables.filter(
           (resp) => resp.admin.id === this.admin.id
         );
-        console.log(this.responsablesadmin)
 
             } else {
         console.error('La réponse du service n\'est pas un tableau.');
@@ -121,7 +154,8 @@ private handleError(errorMessage: string) {
       console.error(errorMessage);
 
    }
-   filterProducts(): void {
+
+filterProducts(): void {
 
     if (this.selectedCategory) {
       let selectedCategoryid = Number(this.selectedCategory)
@@ -130,11 +164,37 @@ private handleError(errorMessage: string) {
       this.loadproducts();
     }
   }
-  creatdormsubmit(){
 
+paginationpromotions(){
+  this.promotionservice.getPagination(this.page,this.size).subscribe(
+    (paginationpromotions) => {
+      this.promotionsadmin = paginationpromotions.content;
+
+      this.totalPages = paginationpromotions.totalPages;
+      this.currentPage = paginationpromotions.number + 1; // Adjust if the API uses 0-based indexing
+   },
+   (error) => {
+     this.handleError(error);
+   }
+ );
+
+}
+changePage(page: number) {
+  this.page = page;
+  this.paginationpromotions();
+}
+filterByStatut() {
+    if (this.selectedStatut.toLowerCase() !== 'tous') {
+      this.filteredPromotions = this.promotionsadmin.filter(
+        (promotion) => promotion.statut === this.selectedStatut
+      );
+      this.promotionsadmin= this.filteredPromotions
+
+    } else {
+      this.filteredPromotions = this.promotionsadmin;
+    }
   }
-
-  submitForm(): void {
+submitForm(): void {
 
     const formData = {
       responsable_id: this.selectedResponsable,
@@ -144,7 +204,6 @@ private handleError(errorMessage: string) {
       statut: "IN_PROCESS",
       quantity: 0
     }
-console.log(formData)
     this.promotionservice.addPromotion(formData).subscribe(
       (response) => {
         console.log('Données envoyées avec succès', response);
@@ -156,5 +215,6 @@ console.log(formData)
       }
     );
   }
+
 }
 

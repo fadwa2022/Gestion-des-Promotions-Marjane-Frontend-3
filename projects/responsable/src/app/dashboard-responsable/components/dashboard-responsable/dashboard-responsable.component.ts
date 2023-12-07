@@ -15,11 +15,15 @@ import { PromotionModule } from '../../../models/promotion/promotion.module';
   styleUrls: ['./dashboard-responsable.component.css']
 })
 export class DashboardResponsableComponent {
+
+
   categories:CategorieModule[];
   products: ProduitModule [];
   productstable: ProduitModule[];
   promotions: PromotionModule[];
+  promotion:PromotionModule;
   promotionsresponsable: PromotionModule[];
+quantite: any;
 
   constructor(
     private sessiondata:SessionDataService,
@@ -85,6 +89,33 @@ export class DashboardResponsableComponent {
         console.error('La réponse du service n\'est pas un tableau.');
       }
     }
+
+    updatePromotion(idpromotion: Number,quantite: number, status: string) {
+
+      this.promotionservice.getPromotionById(idpromotion).subscribe(
+          (promotion) => {
+            this.promotion = promotion;
+        });
+          if (status === 'accepter' && quantite > 20)  {
+            this.promotion.statut = 'ACCEPTED';
+            this.promotion.quantity = quantite;
+          }
+          else if (status === 'refuser' || quantite < 20) {
+            this.promotion.statut = 'REFUSED';
+            this.promotion.quantity = quantite;
+          }
+
+      this.promotionservice.updatePromotion(this.promotion).subscribe(
+        (updatedPromotion) => {
+          console.log('Promotion mise à jour avec succès :', updatedPromotion);
+        },
+        (error) => {
+          console.error('Erreur lors de la mise à jour de la promotion :', error);
+
+        }
+      );
+      }
+
     private isSameDate(date1: Date, date2: Date): boolean {
       return (
         date1.getFullYear() === date2.getFullYear() &&
@@ -92,6 +123,10 @@ export class DashboardResponsableComponent {
         date1.getDate() === date2.getDate()
       );
     }
+onInputChange(promotion: any) {
+  promotion.quantity = this.quantite;
+}
+
     private handleError(errorMessage: string) {
       console.error(errorMessage);
 

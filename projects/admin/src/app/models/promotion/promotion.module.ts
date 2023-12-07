@@ -13,6 +13,9 @@ import { StatutModule } from '../statut/statut.module';
   ]
 })
 export class PromotionModule {
+  find(arg0: (updated: any) => boolean) {
+    throw new Error('Method not implemented.');
+  }
   id:Number;
   responsable:ResponsableModule;
   categorie:CategorieModule;

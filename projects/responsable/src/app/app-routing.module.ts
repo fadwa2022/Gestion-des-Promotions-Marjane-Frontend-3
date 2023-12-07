@@ -5,8 +5,7 @@ import { AuthGuard } from './shared/component/AuthGuard/auth-guard/auth-guard.co
 import { DashboardResponsableComponent } from './dashboard-responsable/components/dashboard-responsable/dashboard-responsable.component';
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  // { path: 'dashboard', component: DashboardAdminComponent, canActivate: [AuthGuard] },
-  { path: 'dashboard', component: DashboardResponsableComponent },
+  { path: 'dashboard', component: DashboardResponsableComponent, canActivate: [AuthGuard] },
 
 ];
 

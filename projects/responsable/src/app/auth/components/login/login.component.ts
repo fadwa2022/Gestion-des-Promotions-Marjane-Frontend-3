@@ -52,6 +52,7 @@ export class LoginComponent {
         if (result) {
           auMoinsUnMotDePasseCorrect = true;
         this.saveToSessionStorage(responsable)
+        this.router.navigate(['/dashboard']);
 
         }
 
