@@ -12,6 +12,7 @@ import { RayonModule } from '../rayon/rayon.module';
   ]
 })
 export class ResponsableModule {
+  [x: string]: any;
   id: number;
   email: string;
   password: string;

@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class AuthService {
   isLoggedIn(): boolean {
-    const adminData = sessionStorage.getItem('admin');
-    return !!adminData; // Returns true if 'admin' attribute is present, false otherwise
+    const Data = sessionStorage.getItem('responsable');
+    return !!Data;
   }
 }

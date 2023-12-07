@@ -30,7 +30,6 @@ export class DashboardAdminComponent implements OnInit {
   selectedCategory: number;
   selectedResponsable: number;
   selectedProduct: number;
-  quantity: number;
   datePromo: string;
   p: number = 1;
   constructor(
@@ -143,7 +142,7 @@ private handleError(errorMessage: string) {
       produit_id: this.selectedProduct,
       datepromo: this.datePromo,
       statut: "IN_PROCESS",
-      quantity: this.quantity
+      quantity: 0
     }
 console.log(formData)
     this.promotionservice.addPromotion(formData).subscribe(

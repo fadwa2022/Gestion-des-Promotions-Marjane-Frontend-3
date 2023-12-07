@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 import Swal from 'sweetalert2'
-import { AdminModule } from 'projects/admin/src/app/models/admin/admin.module';
-import { AdminService } from 'projects/admin/src/app/auth/services/admin/admin.service';
+
 import { Router } from '@angular/router';
+import { ResponsableService } from '../../services/responsable/responsable.service';
+import { ResponsableModule } from '../../../models/responsable/responsable.module';
+import * as bcrypt from 'bcryptjs';
 
 @Component({
   selector: 'app-login',
@@ -12,7 +14,7 @@ import { Router } from '@angular/router';
 
 export class LoginComponent {
   constructor(
-    private adminService: AdminService,
+    private responsableService: ResponsableService,
     private router: Router) {}
   imagePath: string = 'assets/images/marjane (1).webp';
     email: string;
@@ -23,38 +25,51 @@ export class LoginComponent {
 
 
 
-      adminLogin() {
-        this.adminService.getAdminByEmail(this.email).subscribe(
-          (admin) => {
-              if (admin) {
-                this.handleValidAdmin(admin);
+     Login() {
+        this.responsableService.getResponsables().subscribe(
+          (responsable) => {
+              if (responsable) {
+                this.handleValid(responsable);
               } else {
-                this.handleInvalidAdmin();
+                this.handleInvalid();
               }
           },
           (error) => {
-            this.handleError('Error fetching admin: ' + error);
+            this.handleError('Error fetching : ' + error);
+            this.removeItem();
           }
         );
       }
 
-      private handleValidAdmin(admin: AdminModule) {
-        if (this.password === admin.password) {
-          this.saveAdminToSessionStorage(admin);
-          this.router.navigate(['/dashboard']);
+      private handleValid(responsables: ResponsableModule) {
+        const responsablesAvecEmail = responsables['filter'](res => res.email === this.email);
+
+  if (responsablesAvecEmail.length > 0) {
+    let auMoinsUnMotDePasseCorrect = false;
+
+    responsablesAvecEmail.forEach(responsable => {
+      bcrypt.compare(this.password, responsable.password, (err, result) => {
+        if (result) {
+          auMoinsUnMotDePasseCorrect = true;
+        this.saveToSessionStorage(responsable)
+
+        }
+
+        if (responsable === responsablesAvecEmail[responsablesAvecEmail.length - 1]) {
+          if (!auMoinsUnMotDePasseCorrect) {
+            console.error('Mot de passe incorrect');
+          }
+        }
+      });
+    });
         } else {
           this.removeItem();
-
-        Swal.fire({
-          title: 'error',
-          text: '',
-          icon: 'warning',
-          confirmButtonText: 'Cool'
-        })
+          console.error('Email incorrect');
         }
+
       }
 
-      private handleInvalidAdmin() {
+      private handleInvalid() {
         this.removeItem();
         Swal.fire({
           title: 'Error!',
@@ -64,13 +79,13 @@ export class LoginComponent {
         })
             }
 
-      private saveAdminToSessionStorage(admin: AdminModule) {
-        let adminJson = JSON.stringify(admin);
-        sessionStorage.setItem('admin', adminJson);
+      private saveToSessionStorage(responsable: ResponsableModule) {
+        let Json = JSON.stringify(responsable);
+        sessionStorage.setItem('responsable', Json);
       }
 
       private removeItem() {
-        sessionStorage.removeItem('admin');
+        sessionStorage.removeItem('responsable');
       }
 
       private handleError(errorMessage: string) {

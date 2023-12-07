@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AdminModule } from '../models/admin/admin.module';
+import { ResponsableModule } from '../models/responsable/responsable.module';
 
 @Injectable({
   providedIn: 'root'
@@ -7,13 +7,13 @@ import { AdminModule } from '../models/admin/admin.module';
 export class SessionDataService {
 
   constructor() { }
-  getSessionData(): AdminModule | undefined {
-    const adminJson = sessionStorage.getItem('admin');
-    if (adminJson) {
-      const admin: AdminModule = JSON.parse(adminJson);
-      return admin;
+  getSessionData(): ResponsableModule | undefined {
+    const responsableJson = sessionStorage.getItem('responsable');
+    if (responsableJson) {
+      const responsable: ResponsableModule = JSON.parse(responsableJson);
+      return responsable;
     } else {
-      console.error('No admin data found in sessionStorage');
+      console.error('No responsable data found in sessionStorage');
       return undefined;
     }
   }
