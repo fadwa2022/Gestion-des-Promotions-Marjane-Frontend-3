@@ -9,6 +9,7 @@ import { CategorieModule } from '../../../models/categorie/categorie.module';
 import { PaginationService } from '../../services/PaginationService/pagination-service.service';
 import { ProduitsService } from '../../services/produits/produits.service';
 import { ProduitModule } from '../../../models/produit/produit.module';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard-admin',
@@ -36,7 +37,7 @@ export class DashboardAdminComponent implements OnInit {
   selectedStatut: any ;
   filteredPromotions: PromotionModule[];
   page:number = 0;
-  size:number = 3;
+  size:number = 2;
   totalPages : number = 0;
   currentPage: any;
     constructor(
@@ -45,13 +46,35 @@ export class DashboardAdminComponent implements OnInit {
     private responsableservice:ResponsableService,
     private categoriessevice:CategorieService,
     private productsservice:ProduitsService,
+    private route : ActivatedRoute,
     ) {}
     ngOnInit(): void {
+      this.route.queryParams.subscribe(params => {
+        this.page = params['page'] || 0;
+        this.size = params['size'] || 2;
+        this.promotionservice.getPagination(this.page,this.size).subscribe({
+          next: data => {
+            console.log(data);
+            this.promotionsadmin = data.content ;
+            this.totalPages = data.totalPages;
+          },
+          error: error => {
+            console.error('There was an error!', error);
+            console.log(error.error.message);
+            error.error.message;
+          }
+        });
+      });
       this.loadPromotions();
       this.loadResponsable();
       this.loadcategories();
       this.loadproducts();
       this.paginationpromotions();
+
+
+
+
+
    }
 loadcategories():void{
   this.categoriessevice.getCategories().subscribe(
@@ -169,9 +192,8 @@ paginationpromotions(){
   this.promotionservice.getPagination(this.page,this.size).subscribe(
     (paginationpromotions) => {
       this.promotionsadmin = paginationpromotions.content;
-
       this.totalPages = paginationpromotions.totalPages;
-      this.currentPage = paginationpromotions.number + 1; // Adjust if the API uses 0-based indexing
+console.log(this.promotionsadmin)
    },
    (error) => {
      this.handleError(error);
@@ -179,10 +201,7 @@ paginationpromotions(){
  );
 
 }
-changePage(page: number) {
-  this.page = page;
-  this.paginationpromotions();
-}
+
 filterByStatut() {
     if (this.selectedStatut.toLowerCase() !== 'tous') {
       this.filteredPromotions = this.promotionsadmin.filter(
